@@ -26,7 +26,9 @@ class TierDefinition(models.Model):
     model_id = fields.Many2one(
         comodel_name="ir.model",
         string="Referenced Model",
-        domain=lambda self: [("model", "in", self._get_tier_validation_model_names())],
+        domain=lambda self: [
+            ("model", "in", self._get_tier_validation_model_names())
+        ],
     )
     model = fields.Char(related="model_id.model", index=True, store=True)
     review_type = fields.Selection(

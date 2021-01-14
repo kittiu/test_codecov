@@ -26,7 +26,9 @@ class TierTierValidation(CommonTierValidation):
     def test_03_request_validation_approved(self):
         """User 2 request a validation and user 1 approves it."""
         self.assertFalse(self.test_record.review_ids)
-        reviews = self.test_record.with_user(self.test_user_2.id).request_validation()
+        reviews = self.test_record.with_user(
+            self.test_user_2.id
+        ).request_validation()
         self.assertTrue(reviews)
         record = self.test_record.with_user(self.test_user_1.id)
         record.invalidate_cache()
@@ -36,7 +38,9 @@ class TierTierValidation(CommonTierValidation):
     def test_04_request_validation_rejected(self):
         """Request validation, rejection and reset."""
         self.assertFalse(self.test_record.review_ids)
-        reviews = self.test_record.with_user(self.test_user_2.id).request_validation()
+        reviews = self.test_record.with_user(
+            self.test_user_2.id
+        ).request_validation()
         self.assertTrue(reviews)
         record = self.test_record.with_user(self.test_user_1.id)
         record.invalidate_cache()
@@ -49,7 +53,9 @@ class TierTierValidation(CommonTierValidation):
     def test_05_under_validation(self):
         """Write is forbidden in a record under validation."""
         self.assertFalse(self.test_record.review_ids)
-        reviews = self.test_record.with_user(self.test_user_2.id).request_validation()
+        reviews = self.test_record.with_user(
+            self.test_user_2.id
+        ).request_validation()
         self.assertTrue(reviews)
         record = self.test_record.with_user(self.test_user_1.id)
         record.invalidate_cache()
@@ -59,7 +65,9 @@ class TierTierValidation(CommonTierValidation):
     def test_06_validation_process_open(self):
         """Operation forbidden while a validation process is open."""
         self.assertFalse(self.test_record.review_ids)
-        reviews = self.test_record.with_user(self.test_user_2.id).request_validation()
+        reviews = self.test_record.with_user(
+            self.test_user_2.id
+        ).request_validation()
         self.assertTrue(reviews)
         record = self.test_record.with_user(self.test_user_1.id)
         record.invalidate_cache()
@@ -68,12 +76,16 @@ class TierTierValidation(CommonTierValidation):
 
     def test_07_search_reviewers(self):
         """Test search methods."""
-        reviews = self.test_record.with_user(self.test_user_2.id).request_validation()
+        reviews = self.test_record.with_user(
+            self.test_user_2.id
+        ).request_validation()
         self.assertTrue(reviews)
         record = self.test_record.with_user(self.test_user_1.id)
         record.invalidate_cache()
         self.assertIn(self.test_user_1, record.reviewer_ids)
-        res = self.test_model.search([("reviewer_ids", "in", self.test_user_1.id)])
+        res = self.test_model.search(
+            [("reviewer_ids", "in", self.test_user_1.id)]
+        )
         self.assertTrue(res)
 
     def test_08_search_validated(self):
@@ -151,7 +163,9 @@ class TierTierValidation(CommonTierValidation):
             }
         )
         # Request validation
-        review = test_record.with_user(self.test_user_2.id).request_validation()
+        review = test_record.with_user(
+            self.test_user_2.id
+        ).request_validation()
         self.assertTrue(review)
         record = test_record.with_user(self.test_user_1.id)
         record.invalidate_cache()
@@ -170,7 +184,9 @@ class TierTierValidation(CommonTierValidation):
         comment = test_record.with_user(
             self.test_user_1.id
         )._notify_rejected_review_body()
-        self.assertEqual(comment, "A review was rejected by John. (Test Comment)")
+        self.assertEqual(
+            comment, "A review was rejected by John. (Test Comment)"
+        )
 
     def test_11_add_comment_rejection(self):
         # Create new test record
@@ -186,7 +202,9 @@ class TierTierValidation(CommonTierValidation):
             }
         )
         # Request validation
-        review = test_record.with_user(self.test_user_2.id).request_validation()
+        review = test_record.with_user(
+            self.test_user_2.id
+        ).request_validation()
         self.assertTrue(review)
         record = test_record.with_user(self.test_user_1.id)
         record.invalidate_cache()
@@ -205,7 +223,9 @@ class TierTierValidation(CommonTierValidation):
         comment = test_record.with_user(
             self.test_user_1.id
         )._notify_rejected_review_body()
-        self.assertEqual(comment, "A review was rejected by John. (Test Comment)")
+        self.assertEqual(
+            comment, "A review was rejected by John. (Test Comment)"
+        )
 
     def test_12_approve_sequence(self):
         # Create new test record
@@ -233,13 +253,19 @@ class TierTierValidation(CommonTierValidation):
         )
         # Request validation
         self.assertFalse(self.test_record.review_ids)
-        reviews = test_record.with_user(self.test_user_2.id).request_validation()
+        reviews = test_record.with_user(
+            self.test_user_2.id
+        ).request_validation()
         self.assertTrue(reviews)
 
-        docs1 = self.test_user_2.with_user(self.test_user_1).review_user_count()
+        docs1 = self.test_user_2.with_user(
+            self.test_user_1
+        ).review_user_count()
         for doc in docs1:
             self.assertEqual(doc.get("pending_count"), 1)
-        docs2 = self.test_user_2.with_user(self.test_user_2).review_user_count()
+        docs2 = self.test_user_2.with_user(
+            self.test_user_2
+        ).review_user_count()
         for doc in docs2:
             self.assertEqual(doc.get("pending_count"), 0)
 
@@ -250,9 +276,13 @@ class TierTierValidation(CommonTierValidation):
         record2.invalidate_cache()
         self.assertFalse(record2.can_review)
         # User 1 validates the record, 2 review should be approved.
-        self.assertFalse(any(r.status == "approved" for r in record1.review_ids))
+        self.assertFalse(
+            any(r.status == "approved" for r in record1.review_ids)
+        )
         record1.validate_tier()
-        self.assertTrue(any(r.status == "approved" for r in record1.review_ids))
+        self.assertTrue(
+            any(r.status == "approved" for r in record1.review_ids)
+        )
 
     def test_12_approve_sequence_same_user(self):
         """Similar to test_12_approve_sequence, but all same users,
@@ -282,7 +312,9 @@ class TierTierValidation(CommonTierValidation):
         )
         # Request validation
         self.assertFalse(self.test_record.review_ids)
-        reviews = test_record.with_user(self.test_user_1.id).request_validation()
+        reviews = test_record.with_user(
+            self.test_user_1.id
+        ).request_validation()
         self.assertTrue(reviews)
 
         record1 = test_record.with_user(self.test_user_1.id)
@@ -290,19 +322,23 @@ class TierTierValidation(CommonTierValidation):
         self.assertTrue(record1.can_review)
         # Validation will be all by sequence
         self.assertEqual(
-            3, len(record1.review_ids.filtered(lambda l: l.status == "pending"))
+            3,
+            len(record1.review_ids.filtered(lambda l: l.status == "pending")),
         )
         record1.validate_tier()
         self.assertEqual(
-            2, len(record1.review_ids.filtered(lambda l: l.status == "pending"))
+            2,
+            len(record1.review_ids.filtered(lambda l: l.status == "pending")),
         )
         record1.validate_tier()
         self.assertEqual(
-            1, len(record1.review_ids.filtered(lambda l: l.status == "pending"))
+            1,
+            len(record1.review_ids.filtered(lambda l: l.status == "pending")),
         )
         record1.validate_tier()
         self.assertEqual(
-            0, len(record1.review_ids.filtered(lambda l: l.status == "pending"))
+            0,
+            len(record1.review_ids.filtered(lambda l: l.status == "pending")),
         )
 
     def test_13_onchange_review_type(self):
@@ -356,13 +392,21 @@ class TierTierValidation(CommonTierValidation):
         test_record.invalidate_cache()
         self.assertTrue(test_record.review_ids)
         # Used by front-end
-        count = self.test_user_1.with_user(self.test_user_1).review_user_count()
+        count = self.test_user_1.with_user(
+            self.test_user_1
+        ).review_user_count()
         self.assertEqual(len(count), 1)
         # False Review
         self.assertFalse(self.test_record._calc_reviews_validated(False))
-        self.assertIn("requested", self.test_record._notify_requested_review_body())
-        self.assertIn("rejected", self.test_record._notify_rejected_review_body())
-        self.assertIn("accepted", self.test_record._notify_accepted_reviews_body())
+        self.assertIn(
+            "requested", self.test_record._notify_requested_review_body()
+        )
+        self.assertIn(
+            "rejected", self.test_record._notify_rejected_review_body()
+        )
+        self.assertIn(
+            "accepted", self.test_record._notify_accepted_reviews_body()
+        )
 
     def test_16_review_user_count_on_rejected(self):
         """If document is rejected, it should always removed from tray"""
@@ -425,7 +469,9 @@ class TierTierValidationView(CommonTierValidation):
             form = etree.fromstring(f._view["arch"])
             self.assertFalse(form.xpath("//field[@name='review_ids']"))
             self.assertFalse(form.xpath("//field[@name='can_review']"))
-            self.assertFalse(form.xpath("//button[@name='request_validation']"))
+            self.assertFalse(
+                form.xpath("//button[@name='request_validation']")
+            )
 
     def test_view_automatic(self):
         # We need to add a view in order to ensure that an automatic view with all

@@ -47,7 +47,9 @@ class Users(models.Model):
 
     @api.model
     def get_reviews(self, data):
-        review_obj = self.env["tier.review"].with_context(lang=self.env.user.lang)
+        review_obj = self.env["tier.review"].with_context(
+            lang=self.env.user.lang
+        )
         res = review_obj.search_read([("id", "in", data.get("res_ids"))])
         for r in res:
             # Get the translated status value.

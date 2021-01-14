@@ -49,7 +49,8 @@ class TierValidation(models.AbstractModel):
     def _compute_has_comment(self):
         for rec in self:
             has_comment = rec.review_ids.filtered(
-                lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
+                lambda r: r.status == "pending"
+                and (self.env.user in r.reviewer_ids)
             ).mapped("has_comment")
             rec.has_comment = True in has_comment
 
@@ -57,11 +58,13 @@ class TierValidation(models.AbstractModel):
         all_reviews = self.review_ids.filtered(lambda r: r.status == "pending")
         my_reviews = all_reviews.filtered(lambda r: user in r.reviewer_ids)
         # Include all my_reviews with approve_sequence = False
-        sequences = my_reviews.filtered(lambda r: not r.approve_sequence).mapped(
+        sequences = my_reviews.filtered(
+            lambda r: not r.approve_sequence
+        ).mapped("sequence")
+        # Include only my_reviews with approve_sequence = True
+        approve_sequences = my_reviews.filtered("approve_sequence").mapped(
             "sequence"
         )
-        # Include only my_reviews with approve_sequence = True
-        approve_sequences = my_reviews.filtered("approve_sequence").mapped("sequence")
         if approve_sequences:
             my_sequence = min(approve_sequences)
             min_sequence = min(all_reviews.mapped("sequence"))
@@ -84,18 +87,18 @@ class TierValidation(models.AbstractModel):
     def _search_validated(self, operator, value):
         assert operator in ("=", "!="), "Invalid domain operator"
         assert value in (True, False), "Invalid domain value"
-        pos = self.search([(self._state_field, "in", self._state_from)]).filtered(
-            lambda r: r.review_ids and r.validated == value
-        )
+        pos = self.search(
+            [(self._state_field, "in", self._state_from)]
+        ).filtered(lambda r: r.review_ids and r.validated == value)
         return [("id", "in", pos.ids)]
 
     @api.model
     def _search_rejected(self, operator, value):
         assert operator in ("=", "!="), "Invalid domain operator"
         assert value in (True, False), "Invalid domain value"
-        pos = self.search([(self._state_field, "in", self._state_from)]).filtered(
-            lambda r: r.review_ids and r.rejected == value
-        )
+        pos = self.search(
+            [(self._state_field, "in", self._state_from)]
+        ).filtered(lambda r: r.review_ids and r.rejected == value)
         return [("id", "in", pos.ids)]
 
     @api.model
@@ -132,7 +135,9 @@ class TierValidation(models.AbstractModel):
             if isinstance(rec.id, models.NewId):
                 rec.need_validation = False
                 continue
-            tiers = self.env["tier.definition"].search([("model", "=", self._name)])
+            tiers = self.env["tier.definition"].search(
+                [("model", "=", self._name)]
+            )
             valid_tiers = any([rec.evaluate_tier(tier) for tier in tiers])
             rec.need_validation = (
                 not rec.review_ids
@@ -204,7 +209,8 @@ class TierValidation(models.AbstractModel):
         self.ensure_one()
         tier_reviews = tiers or self.review_ids
         user_reviews = tier_reviews.filtered(
-            lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
+            lambda r: r.status == "pending"
+            and (self.env.user in r.reviewer_ids)
         )
         user_reviews.write(
             {
@@ -284,7 +290,9 @@ class TierValidation(models.AbstractModel):
         if has_comment:
             comment = has_comment.mapped("comment")[0]
             return _(
-                "A review was rejected by {}. ({})".format(self.env.user.name, comment)
+                "A review was rejected by {}. ({})".format(
+                    self.env.user.name, comment
+                )
             )
         return _("A review was rejected by %s.") % (self.env.user.name)
 
@@ -301,7 +309,8 @@ class TierValidation(models.AbstractModel):
         self.ensure_one()
         tier_reviews = tiers or self.review_ids
         user_reviews = tier_reviews.filtered(
-            lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
+            lambda r: r.status == "pending"
+            and (self.env.user in r.reviewer_ids)
         )
         user_reviews.write(
             {
@@ -323,7 +332,8 @@ class TierValidation(models.AbstractModel):
         if hasattr(self, post) and hasattr(self, subscribe):
             for rec in self:
                 users_to_notify = tier_reviews.filtered(
-                    lambda r: r.definition_id.notify_on_create and r.res_id == rec.id
+                    lambda r: r.definition_id.notify_on_create
+                    and r.res_id == rec.id
                 ).mapped("reviewer_ids")
                 # Subscribe reviewers and notify
                 getattr(rec, subscribe)(
@@ -383,7 +393,10 @@ class TierValidation(models.AbstractModel):
         self, view_id=None, view_type="form", toolbar=False, submenu=False
     ):
         res = super().fields_view_get(
-            view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu
+            view_id=view_id,
+            view_type=view_type,
+            toolbar=toolbar,
+            submenu=submenu,
         )
         if view_type == "form" and not self._tier_validation_manual_config:
             doc = etree.XML(res["arch"])
