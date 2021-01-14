@@ -15,7 +15,9 @@ class CommonTierValidation(common.SavepointCase):
         cls.loader.backup_registry()
         from .tier_validation_tester import TierValidationTester, TierValidationTester2
 
-        cls.loader.update_registry((TierValidationTester, TierValidationTester2))
+        cls.loader.update_registry(
+            (TierValidationTester, TierValidationTester2)
+        )
 
         cls.test_model = cls.env[TierValidationTester._name]
         cls.test_model_2 = cls.env[TierValidationTester2._name]
@@ -52,7 +54,11 @@ class CommonTierValidation(common.SavepointCase):
         # Create users:
         group_ids = cls.env.ref("base.group_system").ids
         cls.test_user_1 = cls.env["res.users"].create(
-            {"name": "John", "login": "test1", "groups_id": [(6, 0, group_ids)]}
+            {
+                "name": "John",
+                "login": "test1",
+                "groups_id": [(6, 0, group_ids)],
+            }
         )
         cls.test_user_2 = cls.env["res.users"].create(
             {"name": "Mike", "login": "test2"}

@@ -24,8 +24,12 @@ class TierReview(models.Model):
         related="definition_id.company_id",
         store=True,
     )
-    review_type = fields.Selection(related="definition_id.review_type", readonly=True)
-    reviewer_id = fields.Many2one(related="definition_id.reviewer_id", readonly=True)
+    review_type = fields.Selection(
+        related="definition_id.review_type", readonly=True
+    )
+    reviewer_id = fields.Many2one(
+        related="definition_id.reviewer_id", readonly=True
+    )
     reviewer_group_id = fields.Many2one(
         related="definition_id.reviewer_group_id", readonly=True
     )
@@ -39,7 +43,9 @@ class TierReview(models.Model):
     done_by = fields.Many2one(comodel_name="res.users")
     requested_by = fields.Many2one(comodel_name="res.users")
     reviewed_date = fields.Datetime(string="Validation Date")
-    has_comment = fields.Boolean(related="definition_id.has_comment", readonly=True)
+    has_comment = fields.Boolean(
+        related="definition_id.has_comment", readonly=True
+    )
     comment = fields.Char(string="Comments")
     can_review = fields.Boolean(
         compute="_compute_can_review",

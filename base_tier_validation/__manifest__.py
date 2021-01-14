@@ -7,7 +7,7 @@
     "development_status": "Mature",
     "maintainers": ["LoisRForgeFlow"],
     "category": "Tools",
-    "website": "https://github.com/OCA/server-ux",
+    "website": "https://github.com/OCA/account-payment",
     "author": "ForgeFlow, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "application": False,
@@ -23,5 +23,8 @@
         "wizard/comment_wizard_view.xml",
         "templates/tier_validation_templates.xml",
     ],
-    "qweb": ["static/src/xml/systray.xml", "static/src/xml/tier_review_template.xml"],
+    "qweb": [
+        "static/src/xml/systray.xml",
+        "static/src/xml/tier_review_template.xml",
+    ],
 }
